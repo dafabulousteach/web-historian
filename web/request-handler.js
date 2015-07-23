@@ -1,11 +1,16 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
+
 var indexPage = require('./archives/sites.txt');
 var url = require('url');
 
 var fs = require('fs');
 
 var statusCode = null;
+
+// require more modules/folders here!
+var url = require('url');
+
 
 exports.handleRequest = function (req, res) {
   
