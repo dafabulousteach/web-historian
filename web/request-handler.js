@@ -1,33 +1,57 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
-var indexPage = require('../archives/sites.txt');
+var indexPage = require('./archives/sites.txt');
 var url = require('url');
-var messages = { // Object to store results
-  results: []
-};
+var fs = require('fs');
+
 var statusCode = null;
 
 exports.handleRequest = function (req, res) {
-  if(req.method === 'GET'){
-    statusCode = 200;
-    message = JSON.stringify(indexPage);
-    reponse.writeHead("THIS IS YOUR ARCHIVE SPARTAAAA")
+  
+// refer to the URL using path.basename method
+  // if basename is empty, then access the homepage (index.html)
+  // if not empty, access everything after slash
+
+  var base = archive.paths.archivedSites + '/' + path.basename(req.url)
+  console.log(base)
+  
+  // if the base is empty, then base is equal to homepage (index.html)
+  if (path.basename(req.url) === '') { 
+    base = archive.paths.siteAssets + '/index.html'
+  }; 
+
+  if(req.method === "GET"){
+    fs.readFile(base, function(err, html) {
+      if (err) {
+        res.writeHeader(404, {'Content-Type': 'text/html'});
+        res.end();
+      }
+      res.writeHeader(200, {'Content-Type': 'text/html'});
+      res.end(html);
+    });
     
-  } else if (req.method === 'POST'){
-      var data = ''; 
-      request.on('data', function (chunk) { // in case data comes in chunks, we put the pieces together in data
-        data += chunk.toString();
-      });
-      request.on('end', function (){ // event fires when data is complete
-        messages.results.push(JSON.parse(data)); // stores message in messages object
-        
-      })
-    console.log('this is the POST message');
-  } else if(req.method === 'OPTIONS'){
-    // console.log('this is the OPTIONS message');
+
+    // create a callback function for the check-error 
+
+    // go to archive and if file does not exist, create the file
+      // if file exists, clear it
+    // write data to the file
+
+    // fs.open(archive.paths.archivedSites, 'w', function(err, html) {
+    //   if (err) {
+    //     throw err;
+    //   }
+    // });
+    // fs.writeFile(archive.paths.archivedSites, 'www.google.com', function(err, html) {
+    //   if (err) {
+    //     throw err;
+    //   }
+    // });
+
   }
-
-  res.end("wooooowww OH HAY GURL HAYYYY",archive.paths.list);
+  if (req.method === 'POST') {
+    // 
+  }
+  // res.end();
+  // res.end(archive.paths.list);
 };
-
-
