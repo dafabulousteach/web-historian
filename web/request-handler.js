@@ -34,7 +34,8 @@ exports.handleRequest = function (req, res) {
       data += chunk.toString('');
     });
     req.on('end', function(){
-      fs.writeFile('./archives/sites.txt', JSON.parse(data.url), function(err, html){
+      // Add a condition to check if the file exists, if it does, clear it and write over it
+      fs.writeFile('./archives/sites/sites.txt', JSON.parse(data).url + '\\'+'n', function(err, html){
         if(err){
           res.writeHeader(404, {'Content-Type': 'text/html'});
           res.end();
@@ -47,4 +48,4 @@ exports.handleRequest = function (req, res) {
   
 };
 
-
+// we need to stringify the uncoming URL + \n
