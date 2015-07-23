@@ -2,6 +2,7 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var indexPage = require('./archives/sites.txt');
 var url = require('url');
+
 var fs = require('fs');
 
 var statusCode = null;
@@ -37,6 +38,7 @@ exports.handleRequest = function (req, res) {
       // if file exists, clear it
     // write data to the file
 
+
     // fs.open(archive.paths.archivedSites, 'w', function(err, html) {
     //   if (err) {
     //     throw err;
@@ -48,6 +50,7 @@ exports.handleRequest = function (req, res) {
     //   }
     // });
 
+
   }
   if (req.method === 'POST') {
     // 
@@ -55,3 +58,7 @@ exports.handleRequest = function (req, res) {
   // res.end();
   // res.end(archive.paths.list);
 };
+
+// pass test 1: write out the GET
+// make res.end be the thing to return (contents of index.html)
+
