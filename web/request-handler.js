@@ -1,51 +1,32 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
-var url = require('url');
-var fs = require('fs');
-var statusCode = null;
+var urlParser = require('url');
+var utils = require('./http-helpers');
 
-exports.handleRequest = function (req, res) {
-  
+var actions = {
+  'GET': function(req, res){
+    var parts = urlParser.parse(req.url);
+    var urlPath = parts.pathname === '/' ? '/index.html' : parts.pathname;
+    utils.serveAssets(res, urlPath);
+  },
+  'POST': function(req, res){
+    utils.collectData(req, function(data){
+      // in sites.txt?
+        // yes:
+          // is archived?
+            // yes:
 
-  if(req.method === "GET"){
-  // refer to the URL using path.basename method
-    // if basename is empty, then access the homepage (index.html)
-    // if not empty, access everything after slash
-
-    var base = archive.paths.archivedSites + '/' + path.basename(req.url)
-    
-    // if the base is empty, then base is equal to homepage (index.html)
-    if (path.basename(req.url) === '') { 
-      base = archive.paths.siteAssets + '/index.html'
-    }; 
-    fs.readFile(base, function(err, html) {
-      if (err) {
-        res.writeHeader(404, {'Content-Type': 'text/html'});
-        res.end();
-      }
-      res.writeHeader(200, {'Content-Type': 'text/html'});
-      res.end(html);
     });
-    
   }
-  if (req.method === 'POST') {
-    var data = '';
-    req.on('data', function(chunk){
-      data += chunk.toString('');
-    });
-    req.on('end', function(){
-      // Add a condition to check if the file exists, if it does, clear it and write over it
-      fs.writeFile('./archives/sites/sites.txt', JSON.parse(data).url + '\\'+'n', function(err, html){
-        if(err){
-          res.writeHeader(404, {'Content-Type': 'text/html'});
-          res.end();
-        }
-        res.writeHeader(302, {'Content-Type': 'text/html'})
-        res.end(html);
-      });
-    });  
-  }
-  
 };
 
-// we need to stringify the uncoming URL + \n
+exports.handleRequest = function (req, res) {
+  var action = actions[req.method];
+  if(action){
+    action(req, res);
+  } else {
+    utils.sendResponse(res, "Not Found", 404);
+  }
+};
+  
+
